@@ -3,20 +3,22 @@
 
 /**
  * Fetch More posts
- * A simple load more posts deal using the Fetch API
- * @see fetch-more-posts.php for pagination vars passed via wp_localize_script
+ * A simple load more posts deal using the Fetch API.
+ * Note that wpFetchMorePosts var is passed via wp_localize_script, in addition
+ * to pagination page position vars.
+ *
+ * @see fetch-more-posts.php
  * @author stephen scaff
  */
 var FetchMore = (function() {
 
-
   var nextLink = wpFetchMorePosts.nextLink,
       pageNum = parseInt(wpFetchMorePosts.startPage) + 1,
       maxPages = parseInt(wpFetchMorePosts.maxPages),
+      postsContainer = document.querySelector('#js-posts'),
       link = document.querySelector('#js-fetch-more'),
       linkContainer = document.querySelector('.fetch-more'),
       linkBtn = document.querySelector('#js-fetch-more .btn'),
-      postsContainer = document.querySelector('#js-posts'),
       linkText = "Keep Reading",
       linkLoadingText = 'Loading...';
 
@@ -33,7 +35,7 @@ var FetchMore = (function() {
     /**
      * Bind our events
      */
-    bindEvents: function(){
+    bindEvents: function() {
 
       // Main click event
       link.addEventListener('click', function (e) {
@@ -51,7 +53,7 @@ var FetchMore = (function() {
     /**
      * Gets Posts from available pagination
      */
-    loadPosts: function(){
+    loadPosts: function() {
       fetch(nextLink)
       .then( function (response) {
         return response.text();
@@ -59,7 +61,7 @@ var FetchMore = (function() {
       .then( function (data) {
         FetchMore.displayPosts(data);
       })
-      .then ( function () {
+      .then( function () {
         FetchMore.updatePage()
         FetchMore.endAnimation()
       })
@@ -84,7 +86,6 @@ var FetchMore = (function() {
           fetchedPostsHTML = fetchedPosts.innerHTML;
 
       postsContainer.insertAdjacentHTML('beforeend', fetchedPostsHTML);
-
     },
 
     /**
@@ -99,7 +100,7 @@ var FetchMore = (function() {
     /**
      * Begins animation, update btn text
      */
-    startAnimation: function(){
+    startAnimation: function() {
       linkContainer.classList.add('is-animating');
       linkBtn.innerHTML = linkLoadingText;
     },
@@ -107,7 +108,7 @@ var FetchMore = (function() {
     /**
      * Ends our animation, updates btn text
      */
-    endAnimation: function(){
+    endAnimation: function() {
       setTimeout(function() {
        linkContainer.classList.remove('is-animating');
        linkBtn.innerText = linkText;
@@ -117,7 +118,7 @@ var FetchMore = (function() {
     /**
      * Updates paginaion pages
      */
-    updatePage: function(){
+    updatePage: function() {
       pageNum++;
       nextLink = nextLink.replace(/\/page\/[0-9]*/, '/page/' + pageNum);
     },

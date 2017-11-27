@@ -1,40 +1,38 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 /**
-*   AJAX Load More
-*   A simple load more to replace pagination
-*
-*   @see load-more/load-more.js
-*   @see scss/components/_load-more.scss
-*/
+ *   Fetch More Posts
+ *   A simple load more / pagination replacement using Fetch API
+ *
+ *   @see fetch-more-posts/fetch-more-posts.js
+ *   @see scss/components/_load-more.scss
+ */
+add_action('template_redirect', 'wp_fetch_more_posts');
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
-
-function jumpoff_fetch_more() {
+function wp_fetch_more_posts() {
   global $wp_query;
 
-  // Add to index/archive pages
   if( is_home() || is_archive() || is_tax() ) {
 
-  // Queue JS
-  wp_enqueue_script('jumpoff_fetch_more_js',
-  get_template_directory_uri() . '/inc/load-more/load-more.js', '', false, true );
+    /**
+     * Load script. Note directoroy location inside an
+     */
+    wp_enqueue_script('wp_fetch_more_posts_js',
+    get_template_directory_uri() . '/inc/fetch-more-posts/fetch-more-posts.js', '', false, true );
 
-  // What page are we on?
-  $paged = ( get_query_var('paged') > 1 ) ? get_query_var('paged') : 1;
+    $paged = ( get_query_var('paged') > 1 ) ? get_query_var('paged') : 1;
+    $max_pages = $wp_query->max_num_pages;
 
-  // How many pages of posts do we have to display?
-  $max_pages = $wp_query->max_num_pages;
-
-  // Some parameters for the JS.
-  wp_localize_script(
-    'jumpoff_fetch_more_js',
-    'wpFetchMore',
+    wp_localize_script(
+      'wp_fetch_more_posts_js',
+      'wpFetchMorePosts',
       array(
-        'startPage'           => $paged,
-        'maxPages'            => $max_pages,
-        'nextLink'            => next_posts($max_pages, false),
+        'startPage' => $paged,
+        'maxPages'  => $max_pages,
+        'nextLink'  => next_posts($max_pages, false),
       )
     );
   }
 }
-add_action('template_redirect', 'jumpoff_fetch_more');
